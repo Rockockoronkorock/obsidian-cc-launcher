@@ -1,6 +1,6 @@
 {
   "name": "obsidian-cc-launch",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Obsidian plugin to launch Claude Code from CLAUDE.md files",
   "main": "main.js",
   "scripts": {
