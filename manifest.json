@@ -1,0 +1,10 @@
+{
+  "id": "obsidian-cc-launch",
+  "name": "Claude Code Launcher",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Launch Claude Code from CLAUDE.md files in your vault",
+  "author": "",
+  "authorUrl": "",
+  "isDesktopOnly": true
+}
