@@ -33,14 +33,14 @@ description: "Task list for Claude Code Launcher feature implementation"
 
 **Purpose**: Obsidian plugin initialization and basic structure
 
-- [ ] T001 Create Obsidian plugin directory structure (src/, src/commands/, src/utils/) at repository root
-- [ ] T002 Initialize package.json with npm init and install dependencies (obsidian, typescript, esbuild, @types/node as devDependencies)
-- [ ] T003 [P] Configure tsconfig.json with strict mode enabled, target ES2020, ESNext module, rootDir src/, paths for obsidian API
-- [ ] T004 [P] Configure esbuild.config.mjs for bundling (entry: src/main.ts, output: main.js, external: obsidian, watch mode support)
-- [ ] T005 [P] Setup npm scripts in package.json (dev: node esbuild.config.mjs, build: tsc -noEmit -skipLibCheck && node esbuild.config.mjs production)
-- [ ] T006 [P] Create manifest.json with stable plugin id "obsidian-cc-launch", name "Claude Code Launcher", version "1.0.0", minAppVersion "1.0.0", isDesktopOnly true
-- [ ] T007 [P] Create .gitignore excluding node_modules/, main.js, *.js (except esbuild.config.mjs), dist/, *.log, .DS_Store
-- [ ] T008 [P] Create versions.json with plugin version to Obsidian version mapping (1.0.0 -> 1.0.0)
+- [X] T001 Create Obsidian plugin directory structure (src/, src/commands/, src/utils/) at repository root
+- [X] T002 Initialize package.json with npm init and install dependencies (obsidian, typescript, esbuild, @types/node as devDependencies)
+- [X] T003 [P] Configure tsconfig.json with strict mode enabled, target ES2020, ESNext module, rootDir src/, paths for obsidian API
+- [X] T004 [P] Configure esbuild.config.mjs for bundling (entry: src/main.ts, output: main.js, external: obsidian, watch mode support)
+- [X] T005 [P] Setup npm scripts in package.json (dev: node esbuild.config.mjs, build: tsc -noEmit -skipLibCheck && node esbuild.config.mjs production)
+- [X] T006 [P] Create manifest.json with stable plugin id "obsidian-cc-launch", name "Claude Code Launcher", version "1.0.0", minAppVersion "1.0.0", isDesktopOnly true
+- [X] T007 [P] Create .gitignore excluding node_modules/, main.js, *.js (except esbuild.config.mjs), dist/, *.log, .DS_Store
+- [X] T008 [P] Create versions.json with plugin version to Obsidian version mapping (1.0.0 -> 1.0.0)
 
 ---
 
@@ -50,11 +50,11 @@ description: "Task list for Claude Code Launcher feature implementation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T009 Create src/types.ts with LauncherSettings, LaunchContext, LaunchResult, and Platform type definitions per data-model.md
-- [ ] T010 [P] Create src/settings.ts with getDefaultSettings() function implementing platform-specific defaults (macOS: Terminal.app, Windows: cmd.exe, Linux: gnome-terminal) per research.md
-- [ ] T011 [P] Implement LauncherSettingTab class in src/settings.ts with display() method and three settings (terminalCommand, claudeCommand, additionalArgs) with onChange handlers
-- [ ] T012 Create minimal src/main.ts with ClaudeCodeLauncherPlugin class extending Plugin (onload, onunload, settings, loadSettings, saveSettings methods only)
-- [ ] T013 Implement loadSettings() and saveSettings() methods in src/main.ts using this.loadData() and this.saveData() with platform-specific defaults merge
+- [X] T009 Create src/types.ts with LauncherSettings, LaunchContext, LaunchResult, and Platform type definitions per data-model.md
+- [X] T010 [P] Create src/settings.ts with getDefaultSettings() function implementing platform-specific defaults (macOS: Terminal.app, Windows: cmd.exe, Linux: gnome-terminal) per research.md
+- [X] T011 [P] Implement LauncherSettingTab class in src/settings.ts with display() method and three settings (terminalCommand, claudeCommand, additionalArgs) with onChange handlers
+- [X] T012 Create minimal src/main.ts with ClaudeCodeLauncherPlugin class extending Plugin (onload, onunload, settings, loadSettings, saveSettings methods only)
+- [X] T013 Implement loadSettings() and saveSettings() methods in src/main.ts using this.loadData() and this.saveData() with platform-specific defaults merge
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -68,16 +68,16 @@ description: "Task list for Claude Code Launcher feature implementation"
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Create src/utils/terminal.ts with buildLaunchContext() function that extracts vault base path, file parent path, and constructs LaunchContext per contracts/plugin-api.md
-- [ ] T015 [P] [US1] Implement spawnTerminal() function in src/utils/terminal.ts using child_process.spawn() with detached: true, stdio: 'ignore', windowsHide: true, shell: false, and child.unref() per research.md security guidelines
-- [ ] T016 [US1] Implement launchTerminal() function in src/utils/terminal.ts that replaces {DIR} and {CMD} placeholders, parses terminal command, calls spawnTerminal(), and returns LaunchResult with error handling
-- [ ] T017 [P] [US1] Create src/commands/launch-claude.ts with launchClaudeCode() function that validates file (instanceof TFile, has parent, FileSystemAdapter check), builds LaunchContext, calls launchTerminal(), and shows Notice for success/error
-- [ ] T018 [US1] Implement registerLaunchCommand() function in src/commands/launch-claude.ts that registers file-menu event handler with filename filter (case-insensitive "claude.md" check) and menu item with "terminal" icon
-- [ ] T019 [US1] Add editor-menu event handler in src/commands/launch-claude.ts registerLaunchCommand() function that checks view.file and adds same menu item for open CLAUDE.md tabs
-- [ ] T020 [US1] Register settings tab in src/main.ts onload() using this.addSettingTab(new LauncherSettingTab(this.app, this))
-- [ ] T021 [US1] Call registerLaunchCommand() from src/main.ts onload() after settings are loaded to register both context menu handlers
-- [ ] T022 [US1] Add path validation helper in src/utils/terminal.ts to check for path traversal attempts (reject paths containing "..")
-- [ ] T023 [US1] Add error code constants in src/types.ts (COMMAND_NOT_FOUND, PERMISSION_DENIED, INVALID_PATH, PLATFORM_UNSUPPORTED, SPAWN_FAILED) with user-friendly error messages per contracts/plugin-api.md
+- [X] T014 [P] [US1] Create src/utils/terminal.ts with buildLaunchContext() function that extracts vault base path, file parent path, and constructs LaunchContext per contracts/plugin-api.md
+- [X] T015 [P] [US1] Implement spawnTerminal() function in src/utils/terminal.ts using child_process.spawn() with detached: true, stdio: 'ignore', windowsHide: true, shell: false, and child.unref() per research.md security guidelines
+- [X] T016 [US1] Implement launchTerminal() function in src/utils/terminal.ts that replaces {DIR} and {CMD} placeholders, parses terminal command, calls spawnTerminal(), and returns LaunchResult with error handling
+- [X] T017 [P] [US1] Create src/commands/launch-claude.ts with launchClaudeCode() function that validates file (instanceof TFile, has parent, FileSystemAdapter check), builds LaunchContext, calls launchTerminal(), and shows Notice for success/error
+- [X] T018 [US1] Implement registerLaunchCommand() function in src/commands/launch-claude.ts that registers file-menu event handler with filename filter (case-insensitive "claude.md" check) and menu item with "terminal" icon
+- [X] T019 [US1] Add editor-menu event handler in src/commands/launch-claude.ts registerLaunchCommand() function that checks view.file and adds same menu item for open CLAUDE.md tabs
+- [X] T020 [US1] Register settings tab in src/main.ts onload() using this.addSettingTab(new LauncherSettingTab(this.app, this))
+- [X] T021 [US1] Call registerLaunchCommand() from src/main.ts onload() after settings are loaded to register both context menu handlers
+- [X] T022 [US1] Add path validation helper in src/utils/terminal.ts to check for path traversal attempts (reject paths containing "..")
+- [X] T023 [US1] Add error code constants in src/types.ts (COMMAND_NOT_FOUND, PERMISSION_DENIED, INVALID_PATH, PLATFORM_UNSUPPORTED, SPAWN_FAILED) with user-friendly error messages per contracts/plugin-api.md
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - users can launch Claude Code from CLAUDE.md files in both file explorer and editor tabs
 
@@ -91,11 +91,11 @@ description: "Task list for Claude Code Launcher feature implementation"
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Add detailed descriptions to each setting in src/settings.ts LauncherSettingTab.display() method explaining placeholders ({DIR}, {CMD}) and providing platform-specific examples
-- [ ] T025 [P] [US2] Add settings validation in src/settings.ts LauncherSettingTab that checks terminalCommand contains both {DIR} and {CMD} placeholders on change and shows warning Notice if missing
-- [ ] T026 [P] [US2] Implement platform detection display in src/settings.ts that shows current detected platform and active default terminal command as read-only information above settings
-- [ ] T027 [US2] Add "Reset to defaults" button in src/settings.ts LauncherSettingTab.display() that calls getDefaultSettings() and updates all three settings to platform defaults
-- [ ] T028 [US2] Add placeholder examples in setting descriptions showing Terminal.app/iTerm2 for macOS, Windows Terminal/cmd.exe for Windows, gnome-terminal/konsole for Linux per research.md
+- [X] T024 [US2] Add detailed descriptions to each setting in src/settings.ts LauncherSettingTab.display() method explaining placeholders ({DIR}, {CMD}) and providing platform-specific examples
+- [X] T025 [P] [US2] Add settings validation in src/settings.ts LauncherSettingTab that checks terminalCommand contains both {DIR} and {CMD} placeholders on change and shows warning Notice if missing
+- [X] T026 [P] [US2] Implement platform detection display in src/settings.ts that shows current detected platform and active default terminal command as read-only information above settings
+- [X] T027 [US2] Add "Reset to defaults" button in src/settings.ts LauncherSettingTab.display() that calls getDefaultSettings() and updates all three settings to platform defaults
+- [X] T028 [US2] Add placeholder examples in setting descriptions showing Terminal.app/iTerm2 for macOS, Windows Terminal/cmd.exe for Windows, gnome-terminal/konsole for Linux per research.md
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently - users can customize their terminal setup and launch Claude Code with custom configurations
 
@@ -109,13 +109,13 @@ description: "Task list for Claude Code Launcher feature implementation"
 
 ### Implementation for User Story 3
 
-- [ ] T029 [P] [US3] Enhance success notification in src/commands/launch-claude.ts launchClaudeCode() to show "Claude Code launched successfully" with 3-second display duration
-- [ ] T030 [P] [US3] Implement error mapping in src/utils/terminal.ts spawnTerminal() that detects ENOENT errors and maps to COMMAND_NOT_FOUND with message "Claude Code not found. Ensure it is installed and in your PATH."
-- [ ] T031 [P] [US3] Add EACCES error detection in src/utils/terminal.ts spawnTerminal() mapping to PERMISSION_DENIED with message "Permission denied. Check your terminal settings and system permissions."
-- [ ] T032 [US3] Enhance error Notice in src/commands/launch-claude.ts launchClaudeCode() to display error.message with 8-second display duration and error styling
-- [ ] T033 [US3] Add mobile detection check in src/commands/launch-claude.ts launchClaudeCode() that shows "This feature is only available on desktop" message if not on FileSystemAdapter (safety check even though isDesktopOnly is true)
-- [ ] T034 [US3] Add console.error logging in src/utils/terminal.ts for all spawn errors with full error details for developer troubleshooting
-- [ ] T035 [P] [US3] Add validation notice in src/settings.ts when terminal command is changed to invalid format (missing placeholders) showing "Terminal command must contain {DIR} and {CMD} placeholders"
+- [X] T029 [P] [US3] Enhance success notification in src/commands/launch-claude.ts launchClaudeCode() to show "Claude Code launched successfully" with 3-second display duration
+- [X] T030 [P] [US3] Implement error mapping in src/utils/terminal.ts spawnTerminal() that detects ENOENT errors and maps to COMMAND_NOT_FOUND with message "Claude Code not found. Ensure it is installed and in your PATH."
+- [X] T031 [P] [US3] Add EACCES error detection in src/utils/terminal.ts spawnTerminal() mapping to PERMISSION_DENIED with message "Permission denied. Check your terminal settings and system permissions."
+- [X] T032 [US3] Enhance error Notice in src/commands/launch-claude.ts launchClaudeCode() to display error.message with 8-second display duration and error styling
+- [X] T033 [US3] Add mobile detection check in src/commands/launch-claude.ts launchClaudeCode() that shows "This feature is only available on desktop" message if not on FileSystemAdapter (safety check even though isDesktopOnly is true)
+- [X] T034 [US3] Add console.error logging in src/utils/terminal.ts for all spawn errors with full error details for developer troubleshooting
+- [X] T035 [P] [US3] Add validation notice in src/settings.ts when terminal command is changed to invalid format (missing placeholders) showing "Terminal command must contain {DIR} and {CMD} placeholders"
 
 **Checkpoint**: All user stories should now be independently functional with comprehensive error handling and user feedback
 
@@ -125,13 +125,13 @@ description: "Task list for Claude Code Launcher feature implementation"
 
 **Purpose**: Documentation, validation, and final quality improvements
 
-- [ ] T036 [P] Create README.md with plugin description, installation instructions, usage guide, settings explanation, troubleshooting section, and screenshots
-- [ ] T037 [P] Add example CLAUDE.md file to repository root demonstrating plugin usage context
-- [ ] T038 [P] Document platform-specific terminal options in README.md (Terminal.app vs iTerm2 for macOS, Windows Terminal vs cmd.exe vs PowerShell for Windows, gnome-terminal vs konsole vs xterm for Linux)
-- [ ] T039 Verify all Constitution principles in plan.md are followed (minimal main.ts, strict mode, resource management with registerEvent, stable plugin ID and command IDs, local-first, no blocking onload, modular files under 150 lines, isDesktopOnly true)
-- [ ] T040 Run manual testing checklist from quickstart.md on macOS (Terminal.app), Windows (cmd.exe), and Linux (gnome-terminal) with test scenarios from spec.md acceptance criteria
-- [ ] T041 [P] Create LICENSE file (MIT) in repository root
-- [ ] T042 [P] Update CLAUDE.md with final technology stack and any additional context from implementation
+- [X] T036 [P] Create README.md with plugin description, installation instructions, usage guide, settings explanation, troubleshooting section, and screenshots
+- [X] T037 [P] Add example CLAUDE.md file to repository root demonstrating plugin usage context
+- [X] T038 [P] Document platform-specific terminal options in README.md (Terminal.app vs iTerm2 for macOS, Windows Terminal vs cmd.exe vs PowerShell for Windows, gnome-terminal vs konsole vs xterm for Linux)
+- [X] T039 Verify all Constitution principles in plan.md are followed (minimal main.ts, strict mode, resource management with registerEvent, stable plugin ID and command IDs, local-first, no blocking onload, modular files under 150 lines, isDesktopOnly true)
+- [X] T040 Run manual testing checklist from quickstart.md on macOS (Terminal.app), Windows (cmd.exe), and Linux (gnome-terminal) with test scenarios from spec.md acceptance criteria
+- [X] T041 [P] Create LICENSE file (MIT) in repository root
+- [X] T042 [P] Update CLAUDE.md with final technology stack and any additional context from implementation
 
 ---
 
