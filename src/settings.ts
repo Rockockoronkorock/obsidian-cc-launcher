@@ -9,10 +9,10 @@ export function getDefaultSettings(): LauncherSettings {
 
 	switch (platform) {
 		case 'darwin':
-			terminalCommand = 'osascript -e \'tell application "Terminal" to do script "cd {DIR} && {CMD}"\'';
+			terminalCommand = 'osascript -e \'tell application "Terminal" to do script "cd \\"{DIR}\\" && {CMD}"\'';
 			break;
 		case 'win32':
-			terminalCommand = 'start cmd /K "cd /D {DIR} && {CMD}"';
+			terminalCommand = 'start cmd /K "cd /D \"{DIR}\" && {CMD}"';
 			break;
 		case 'linux':
 			terminalCommand = 'gnome-terminal --working-directory="{DIR}" -- bash -c "{CMD}; exec bash"';
@@ -121,12 +121,12 @@ export class LauncherSettingTab extends PluginSettingTab {
 
 		const examples: Record<string, string> = {
 			'darwin': 'macOS examples:\n' +
-				'• Terminal.app: osascript -e \'tell application "Terminal" to do script "cd {DIR} && {CMD}"\'\n' +
-				'• iTerm2: osascript -e \'tell application "iTerm2" to create window with default profile command "cd {DIR} && {CMD}"\'',
+				'• Terminal.app: osascript -e \'tell application "Terminal" to do script "cd \\"{DIR}\\" && {CMD}"\'\n' +
+				'• iTerm2: osascript -e \'tell application "iTerm2" to create window with default profile command "cd \\"{DIR}\\" && {CMD}"\'',
 			'win32': 'Windows examples:\n' +
-				'• cmd.exe: start cmd /K "cd /D {DIR} && {CMD}"\n' +
+				'• cmd.exe: start cmd /K "cd /D \\"{DIR}\\" && {CMD}"\n' +
 				'• Windows Terminal: wt.exe -w -1 new-tab -d "{DIR}" cmd /K {CMD}\n' +
-				'• PowerShell: start pwsh -NoExit -Command "Set-Location \'{DIR}\'; {CMD}"',
+				'• PowerShell: start pwsh -NoExit -Command "Set-Location \\"{DIR}\\"; {CMD}"',
 			'linux': 'Linux examples:\n' +
 				'• gnome-terminal: gnome-terminal --working-directory="{DIR}" -- bash -c "{CMD}; exec bash"\n' +
 				'• konsole: konsole --workdir "{DIR}" --noclose -e {CMD}\n' +

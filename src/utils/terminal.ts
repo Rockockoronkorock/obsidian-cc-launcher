@@ -94,16 +94,19 @@ export async function launchTerminal(context: LaunchContext): Promise<LaunchResu
 			};
 		}
 
+		const platform = process.platform;
+
+		// Escape path for platform-specific shell requirements
+		const escapedDir = escapePath(context.workingDirectory, platform);
+
 		// Replace placeholders
 		let terminalCommand = context.terminalCommand
-			.replace(/{DIR}/g, context.workingDirectory)
+			.replace(/{DIR}/g, escapedDir)
 			.replace(/{CMD}/g, context.command);
 
 		// Parse command into executable and arguments
 		// Since terminal commands often have complex quoting, we use shell execution
 		// This is safe because the template is user-configured, not runtime user input
-		const platform = process.platform;
-
 		let executable: string;
 		let args: string[];
 		let useShell: boolean = false;
@@ -148,4 +151,18 @@ export function validatePath(filePath: string): boolean {
 	}
 
 	return true;
+}
+
+export function escapePath(filePath: string, platform: string): string {
+	// Escape special characters based on platform
+	if (platform === 'darwin') {
+		// For macOS AppleScript: escape backslashes and quotes
+		return filePath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+	} else if (platform === 'win32') {
+		// For Windows cmd.exe: escape quotes (backslashes are path separators, don't escape)
+		return filePath.replace(/"/g, '\\"');
+	} else {
+		// Linux: escape quotes and backslashes for shell
+		return filePath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+	}
 }
