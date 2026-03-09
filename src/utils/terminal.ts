@@ -33,8 +33,8 @@ export function buildLaunchContext(
 	if (process.platform === 'darwin') {
 		const macApp = settings.macTerminalApp ?? 'terminal';
 		if (macApp === 'iterm2') {
-			// iTerm2: uses 'create window with default profile command' — different from Terminal.app's 'do script'
-			terminalCommand = 'osascript -e \'tell application "iTerm2" to create window with default profile command "cd \\"{DIR}\\" && {CMD}"\'';
+			// iTerm2 requires multi-statement AppleScript: create window first, then write to its session
+			terminalCommand = `osascript -e 'tell application "iTerm2"' -e 'set newWindow to (create window with default profile)' -e 'tell current session of newWindow' -e 'write text "cd \\"{DIR}\\" && {CMD}"' -e 'end tell' -e 'end tell'`;
 		} else if (macApp === 'terminal') {
 			terminalCommand = 'osascript -e \'tell application "Terminal" to do script "cd \\"{DIR}\\" && {CMD}"\'';
 		} else {
@@ -136,11 +136,11 @@ export async function launchTerminal(context: LaunchContext): Promise<LaunchResu
 			executable = 'cmd';
 			args = ['/c', terminalCommand];
 		} else if (platform === 'darwin' && terminalCommand.includes('osascript')) {
-			// macOS: osascript command
+			// macOS: osascript — extract all -e '...' arguments (supports both single and multi-statement scripts)
 			executable = 'osascript';
-			const scriptMatch = terminalCommand.match(/osascript\s+-e\s+'(.+)'/);
-			if (scriptMatch) {
-				args = ['-e', scriptMatch[1]];
+			const eMatches = [...terminalCommand.matchAll(/-e '([^']+)'/g)];
+			if (eMatches.length > 0) {
+				args = eMatches.flatMap(m => ['-e', m[1]]);
 			} else {
 				args = ['-e', terminalCommand.replace('osascript -e ', '')];
 			}
