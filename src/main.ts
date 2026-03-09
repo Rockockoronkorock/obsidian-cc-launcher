@@ -23,6 +23,10 @@ export default class ClaudeCodeLauncherPlugin extends Plugin {
 	async loadSettings() {
 		const defaults = getDefaultSettings();
 		const loaded = await this.loadData();
+		// Object.assign gives loaded values priority over defaults.
+		// Existing users with no saved macTerminalApp receive the default ('terminal' on macOS),
+		// which is functionally equivalent to the Terminal.app command they had before.
+		// Their saved terminalCommand is preserved and will be shown if they switch to 'custom'.
 		this.settings = Object.assign({}, defaults, loaded);
 	}
 

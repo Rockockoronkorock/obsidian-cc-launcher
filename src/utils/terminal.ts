@@ -1,4 +1,4 @@
-import { App, FileSystemAdapter, Notice, TFile } from 'obsidian';
+import { App, FileSystemAdapter, TFile } from 'obsidian';
 import { spawn } from 'child_process';
 import * as path from 'path';
 import { LauncherSettings, LaunchContext, LaunchResult, ERROR_MESSAGES } from '../types';
@@ -19,6 +19,8 @@ export function buildLaunchContext(
 	}
 
 	const vaultPath = adapter.getBasePath();
+	// file.parent.path is the vault-relative folder (e.g. "projects/myproject" for a CLAUDE.md there)
+	// path.join produces the correct absolute workingDirectory for both file-menu and editor-menu triggers
 	const workingDirectory = path.join(vaultPath, file.parent.path);
 
 	// Build command string
@@ -26,10 +28,27 @@ export function buildLaunchContext(
 		? `${settings.claudeCommand} ${settings.additionalArgs}`
 		: settings.claudeCommand;
 
+	// Resolve terminal command template based on platform and selected terminal app
+	let terminalCommand: string;
+	if (process.platform === 'darwin') {
+		const macApp = settings.macTerminalApp ?? 'terminal';
+		if (macApp === 'iterm2') {
+			// iTerm2: uses 'create window with default profile command' — different from Terminal.app's 'do script'
+			terminalCommand = 'osascript -e \'tell application "iTerm2" to create window with default profile command "cd \\"{DIR}\\" && {CMD}"\'';
+		} else if (macApp === 'terminal') {
+			terminalCommand = 'osascript -e \'tell application "Terminal" to do script "cd \\"{DIR}\\" && {CMD}"\'';
+		} else {
+			// custom: use user-provided template
+			terminalCommand = settings.terminalCommand;
+		}
+	} else {
+		terminalCommand = settings.terminalCommand;
+	}
+
 	return {
 		workingDirectory,
 		command,
-		terminalCommand: settings.terminalCommand
+		terminalCommand
 	};
 }
 
@@ -57,6 +76,7 @@ export function spawnTerminal(
 				let errorMessage = ERROR_MESSAGES.SPAWN_FAILED + error.message;
 
 				// Map specific error codes
+				// ENOENT covers both missing claude-code binary and missing terminal app (e.g. iTerm2 not installed)
 				if (error.code === 'ENOENT') {
 					errorMessage = ERROR_MESSAGES.COMMAND_NOT_FOUND;
 				} else if (error.code === 'EACCES') {

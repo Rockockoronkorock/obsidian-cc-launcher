@@ -3,6 +3,7 @@ export interface LauncherSettings {
 	terminalCommand: string;
 	claudeCommand: string;
 	additionalArgs: string;
+	macTerminalApp?: MacTerminalApp; // macOS only; ignored on other platforms
 }
 
 // Runtime context for launching
@@ -15,6 +16,9 @@ export interface LaunchContext {
 // Platform detection
 export type SupportedPlatform = 'darwin' | 'win32' | 'linux';
 export type Platform = SupportedPlatform | 'unknown';
+
+// macOS terminal application selector (ignored on non-macOS platforms)
+export type MacTerminalApp = 'terminal' | 'iterm2' | 'custom';
 
 // Launch result for error handling
 export interface LaunchResult {

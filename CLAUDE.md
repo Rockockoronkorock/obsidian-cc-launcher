@@ -3,6 +3,7 @@
 Auto-generated from all feature plans. Last updated: 2026-02-11
 
 ## Active Technologies
+- TypeScript 5.x with strict mode enabled + Obsidian API (minAppVersion: 1.0.0) (002-iterm2-support)
 
 - TypeScript 5.x with strict mode enabled + Obsidian API (minAppVersion: 1.0.0 or higher) (001-claude-code-launcher)
 
@@ -22,6 +23,7 @@ npm test && npm run lint
 TypeScript 5.x with strict mode enabled: Follow standard conventions
 
 ## Recent Changes
+- 002-iterm2-support: Added TypeScript 5.x with strict mode enabled + Obsidian API (minAppVersion: 1.0.0)
 
 - 001-claude-code-launcher: Added TypeScript 5.x with strict mode enabled + Obsidian API (minAppVersion: 1.0.0 or higher)
 

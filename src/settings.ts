@@ -1,6 +1,6 @@
 import { App, Notice, PluginSettingTab, Setting } from 'obsidian';
 import type ClaudeCodeLauncherPlugin from './main';
-import { LauncherSettings, Platform } from './types';
+import { LauncherSettings, MacTerminalApp, Platform } from './types';
 
 export function getDefaultSettings(): LauncherSettings {
 	const platform = process.platform as Platform;
@@ -10,7 +10,12 @@ export function getDefaultSettings(): LauncherSettings {
 	switch (platform) {
 		case 'darwin':
 			terminalCommand = 'osascript -e \'tell application "Terminal" to do script "cd \\"{DIR}\\" && {CMD}"\'';
-			break;
+			return {
+				terminalCommand,
+				claudeCommand: 'claude-code',
+				additionalArgs: '',
+				macTerminalApp: 'terminal'
+			};
 		case 'win32':
 			terminalCommand = 'start cmd /K "cd /D \"{DIR}\" && {CMD}"';
 			break;
@@ -44,7 +49,6 @@ export class LauncherSettingTab extends PluginSettingTab {
 
 		containerEl.createEl('h2', { text: 'Claude Code Launcher Settings' });
 
-		// Platform detection display (T026)
 		const platform = process.platform as Platform;
 		const platformNames: Record<string, string> = {
 			'darwin': 'macOS',
@@ -52,31 +56,61 @@ export class LauncherSettingTab extends PluginSettingTab {
 			'linux': 'Linux'
 		};
 		const platformName = platformNames[platform] || 'Unknown';
-		const defaults = getDefaultSettings();
+
+		// Resolve active terminal display name for the info panel
+		const macApp = this.plugin.settings.macTerminalApp ?? 'terminal';
+		const macTerminalNames: Record<MacTerminalApp, string> = {
+			'terminal': 'Terminal.app',
+			'iterm2': 'iTerm2',
+			'custom': 'Custom command'
+		};
+		const activeTerminalLabel = platform === 'darwin'
+			? macTerminalNames[macApp]
+			: this.plugin.settings.terminalCommand;
 
 		const platformInfo = containerEl.createDiv('setting-item-description');
 		platformInfo.style.marginBottom = '1em';
 		platformInfo.style.padding = '0.5em';
 		platformInfo.style.backgroundColor = 'var(--background-secondary)';
-		platformInfo.innerHTML = `<strong>Detected Platform:</strong> ${platformName}<br><strong>Default Terminal:</strong> ${defaults.terminalCommand}`;
+		platformInfo.innerHTML = `<strong>Detected Platform:</strong> ${platformName}<br><strong>Active Terminal:</strong> ${activeTerminalLabel}`;
 
-		// Terminal command setting (T024, T025)
-		new Setting(containerEl)
-			.setName('Terminal command')
-			.setDesc(this.getTerminalCommandDescription(platform))
-			.addText(text => text
-				.setPlaceholder('Enter terminal command')
-				.setValue(this.plugin.settings.terminalCommand)
-				.onChange(async (value) => {
-					// Validate placeholders (T025)
-					if (value && (!value.includes('{DIR}') || !value.includes('{CMD}'))) {
-						new Notice('Terminal command must contain {DIR} and {CMD} placeholders', 5000);
-					}
-					this.plugin.settings.terminalCommand = value;
-					await this.plugin.saveSettings();
-				}));
+		// macOS-only: terminal application selector dropdown (T009)
+		if (platform === 'darwin') {
+			new Setting(containerEl)
+				.setName('Terminal application')
+				.setDesc('Select which terminal to use on macOS')
+				.addDropdown(dropdown => dropdown
+					.addOption('terminal', 'Terminal.app')
+					.addOption('iterm2', 'iTerm2')
+					.addOption('custom', 'Custom command')
+					.setValue(macApp)
+					.onChange(async (value: string) => {
+						this.plugin.settings.macTerminalApp = value as MacTerminalApp;
+						await this.plugin.saveSettings();
+						this.display(); // refresh to show/hide terminal command field
+					}));
+		}
 
-		// Reset to defaults button (T027)
+		// Terminal command text field — shown only for custom mode on macOS, or always on other platforms (T010)
+		const showTerminalCommandField = platform !== 'darwin' || macApp === 'custom';
+		if (showTerminalCommandField) {
+			new Setting(containerEl)
+				.setName('Terminal command')
+				.setDesc(this.getTerminalCommandDescription(platform))
+				.addText(text => text
+					.setPlaceholder('Enter terminal command')
+					.setValue(this.plugin.settings.terminalCommand)
+					.onChange(async (value) => {
+						// Validate placeholders only when the field is visible (T011)
+						if (value && (!value.includes('{DIR}') || !value.includes('{CMD}'))) {
+							new Notice('Terminal command must contain {DIR} and {CMD} placeholders', 5000);
+						}
+						this.plugin.settings.terminalCommand = value;
+						await this.plugin.saveSettings();
+					}));
+		}
+
+		// Reset to defaults button
 		new Setting(containerEl)
 			.setName('Reset to defaults')
 			.setDesc('Reset all settings to platform-specific defaults')
@@ -86,11 +120,11 @@ export class LauncherSettingTab extends PluginSettingTab {
 					const defaults = getDefaultSettings();
 					this.plugin.settings = defaults;
 					await this.plugin.saveSettings();
-					this.display(); // Refresh display
+					this.display();
 					new Notice('Settings reset to defaults');
 				}));
 
-		// Claude Code command setting (T024)
+		// Claude Code command setting
 		new Setting(containerEl)
 			.setName('Claude Code command')
 			.setDesc('Command to invoke Claude Code. Examples: "claude-code", "npx claude-code", or full path to executable.')
@@ -102,7 +136,7 @@ export class LauncherSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
-		// Additional arguments setting (T024)
+		// Additional arguments setting
 		new Setting(containerEl)
 			.setName('Additional arguments')
 			.setDesc('Optional additional arguments to pass to Claude Code (e.g., "--verbose", "--model sonnet")')
